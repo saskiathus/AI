@@ -15,9 +15,11 @@ y = data.iloc[:,-1:]
 
 
 #Neural Networks
-from sklearn.linear_model import LinearRegression
+import sklearn.neural_network as nn
 
-model = LinearRegression()
+#Number of layers
+n = 10
+model = nn.MLPClassifier(n)
 model.fit(X,y)
 
-#Error due to value types, they should be float
+#Error due to value types, they should be float. Next step: convert string into float
