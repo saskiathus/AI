@@ -22,3 +22,5 @@ Xfit = xfit[:, np.newaxis]
 yfit = model.predict(Xfit)
 plt.scatter(x, y)
 plt.plot(xfit, yfit);
+
+#fit random data set
