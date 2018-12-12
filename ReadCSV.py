@@ -36,19 +36,6 @@ def convert_string(string):
 
 
 #Examples
-(X,y) = convert_CsvToData('TraData.csv')
-(Xt, yt) = convert_CsvToData('input.csv',TrainingData = False)
+##(X,y) = convert_CsvToData('TraData.csv')
+##(Xt, yt) = convert_CsvToData('input.csv',TrainingData = False)
 ##convert_DataToCsv(yt,'output.csv')
-
-
-
-#Neural Networks
-import sklearn.neural_network as nn
-
-#Number of layers
-n = 10
-model = nn.MLPClassifier(n)
-model.fit(X,y)
-
-yt = model.predict(Xt)
-convert_DataToCsv(yt,'output.csv')
