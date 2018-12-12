@@ -10,6 +10,7 @@ import sklearn.neural_network as nn
 n = 20
 model = nn.MLPClassifier(n)
 
+#k-fold model
 import random as rd
 import numpy as np
 
@@ -20,11 +21,8 @@ for i in range(10):
         sampleBot = int(k_size * j)
         sampleUp = int(k_size * (j+1))
         model.fit(X[sampleBot:sampleUp],y[sampleBot:sampleUp])
-    yRes = model.predict(X[sampleUp:])
-    diff = yRes - y[sampleUp:]
-    print "Number of differences between Training and Test:",np.count_nonzero(diff)
-    
-#model.fit(X[:100],y[:100])
+    print "Score:",model.score(X[sampleUp:],y[sampleUp:])
+
 
 yt = model.predict(Xt)
 convert_DataToCsv(yt,'output.csv')
