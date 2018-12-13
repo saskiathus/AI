@@ -1,7 +1,7 @@
-from ReadCSV import *
-#(X,y) = convert_CsvToData('TraData.csv')
-(X,y) = convert_CsvToData_ratio('TraData.csv', size = 300000)
-(Xt, yt) = convert_CsvToData('input.csv',TrainingData = False)
+from ReadCSV_V2 import *
+#X, y = convert_CsvToData('TraData.csv')
+X, y = convert_CsvToData_ratio('TraData.csv')
+Xt, yt = convert_CsvToData('input.csv',TrainingData = False)
 print "Data extraction completed\n"
 
 #Neural Networks library
