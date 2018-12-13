@@ -1,0 +1,100 @@
+import pandas as pd
+import numpy as np
+from sklearn import preprocessing
+from ReadCSV import *
+import random as rd
+
+#I'M USING PYTHON3 SO IF YOU ARE USING PYTHON 2 JUST GET RID OF THE PAREATHESSIS OF THE 'Print' function  print()  ---> print 
+# Set number of click and unclick data for traning
+Number_of_clicked_data = 50
+Number_of_unclicked_data = 500
+
+
+(Xtr, ytr) = convert_CsvToData('TraData.csv') #import train data
+(Xte, yte) = convert_CsvToData('input.csv', TrainingData = False) #Test dataset
+#print ((Xtr,ytr))
+print ("Data extraction completed\n")
+
+#Neural Networks library
+import sklearn.neural_network as nn
+from sklearn import metrics
+
+model = nn.MLPClassifier(activation='tanh', solver='lbfgs', alpha = 1e-5, max_iter=500,  hidden_layer_sizes=(10,5), random_state=None)
+
+
+
+
+
+#k-fold, l is k here
+l=0
+x_select_test = pd.DataFrame()
+y_select_test = []
+while l<5:
+    #choose 50 click data and 550 unclick data for traning
+    i=0
+    k=0
+    choose_Data = []
+    x_select_tran = pd.DataFrame()
+    y_select_tran = []
+    
+    print("Start Selecting clicked Data")
+    #select the data that is clicked append to x_select_tran/y_select_tran
+    while ytr[i] != 1 or k < Number_of_clicked_data:
+       i = rd.randint(0,len(ytr)-1)
+       if ytr[i] == 1: 
+           x_select_tran = x_select_tran.append(Xtr[i:i+1])
+           y_select_tran.append(ytr[i])
+           choose_Data.append(i)
+           k = k+1
+           
+    print("Start Selecting un-clicked Data")       
+    #select the data that is un-clicked append to x_select_tran/y_select_tran
+    m = 0
+    while ytr[i] != 0 or m < Number_of_unclicked_data:
+        i = rd.randint(0,len(ytr)-1)
+        if ytr[i] == 0 and i not in choose_Data:
+            x_select_tran = x_select_tran.append(Xtr[i:i+1])
+            y_select_tran.append(ytr[i])
+            choose_Data.append(i)
+            m = m+1
+            
+    print("Start Selecting disjoint Data")           
+    #dejoint the trainig data and the test data       
+    j=0
+    n=0
+    for j in range(5000):
+        if n not in choose_Data:
+            n = rd.randint(0,len(ytr)-1)
+            x_select_test = x_select_test.append(Xtr[n:n+1])
+            y_select_test.append(ytr[n])
+        
+   
+    print("Start fitting #", l)
+    model.fit(x_select_tran,y_select_tran) # Fit the selected data
+    
+    
+    y_pred = model.predict(x_select_test)
+    y_true = y_select_test
+    
+    print ("Precision:",metrics.precision_score(y_true, y_pred))
+    print ("Recall:", metrics.recall_score(y_true, y_pred))
+    
+    l = l+1
+
+
+#Fitting and scoreing the model
+
+
+yte = model.predict(Xte)
+print("Training complete")
+
+print("yte",yte)
+
+
+convert_DataToCsv(yte,'output.csv')
+
+
+
+
+
+
