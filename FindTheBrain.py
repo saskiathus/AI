@@ -3,20 +3,19 @@ from ReadCSV import *
 import pandas as pd
 import time
 
-data_size = [100,1000,5000]
-n_layers = [10,20,42,60,100]
-ratio_p = [0.6,0.3,0.1,0.01,0.001]
+data_size = [3100]
+n_layers = [100]
+ratio_p = [0.000333 * i for i in range(1,10)]
 k_samples = [5,7,10,11,14,16,20]
-activation = ['logistic', 'tanh']
-solver = ['lbfgs', 'sgd', 'adam']
-seed = [0,None]
+activation = ['tanh']
+solver = ['lbfgs']
+seed = [None]
 
 df = pd.DataFrame()
 n_combination = len(data_size) * len(n_layers) * len(ratio_p) * len(k_samples) * len(activation) *  len(solver) * len(seed)
 i = 0
-#comb = []
-iStart, iFinish = 1305,1680
-name = "Results_d.csv"
+iStart = 0
+name = "Results.csv"
 
 for d in data_size:
     for n in n_layers:
@@ -25,9 +24,8 @@ for d in data_size:
                 for a in activation:
                     for s in solver:
                         for se in seed:
-                            #comb.append([d,n,r,k,a,s,se])
                             i = i+1
-                            if i < iStart or i > iFinish:
+                            if i < iStart:
                                 continue
                             print i,"/",n_combination,":",d,n,r,k,a,s,se
                             stTime = time.time()
