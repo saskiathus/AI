@@ -17,19 +17,20 @@ def Results(y_true, y_pred, print_res = True):
         print "Accuracy:",acc,"\nPrecision:",prec,"\nRecall:",rec,"\nF-Measure:",F,"\n"
     return F
 
-def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbfgs', seed = None):
+def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbfgs', seed = None, name_brain = 'brain'):
     #Data
     X, y = convert_CsvToData_ratio('TraData.csv', ratio = ratio_p, size = data_size)
     #Xt, yt = convert_CsvToData('input.csv',TrainingData = False)
     print "Data extraction completed\n"
 
     #Brain
-    if not(os.path.isfile('brain')):
+    name = name_brain
+    if not(os.path.isfile(name)):
         model = nn.MLPClassifier(hidden_layer_sizes = n_layers, activation = activation,
                                  solver = solver, random_state = seed)
-        pickle.dump(model, open("brain", "wb"))
+        pickle.dump(model, open(name, "wb"))
     else:
-        model = pickle.load(open("brain","rb"))
+        model = pickle.load(open(name,"rb"))
 
     #k-fold alt-model
     F_measure = 0.0
@@ -44,7 +45,7 @@ def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbf
         F_i = Results(y[k_test:k_test+k_size],model.predict(X[k_test:k_test+k_size]),False)
         F_measure = F_measure + F_i
 
-    pickle.dump(model, open("brain", "wb"))
+    pickle.dump(model, open(name, "wb"))
     #yt = model.predict(Xt)
     #convert_DataToCsv(yt,'output.csv')
     return F_measure/100, F_i
