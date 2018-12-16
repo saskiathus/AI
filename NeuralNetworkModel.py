@@ -20,24 +20,32 @@ def Results(y_true, y_pred, print_res = True):
 def NN_Model(data_size, n_layers, ratio_p, k, activation, solver, seed):
     #Data
     X, y = convert_CsvToData_ratio('TraData.csv', ratio = ratio_p, size = data_size)
+    #Xt, yt = convert_CsvToData('input.csv',TrainingData = False)
     print "Data extraction completed\n"
 
     #Brain
-    model = nn.MLPClassifier(hidden_layer_sizes = n_layers, activation = activation,
-                         solver = solver, random_state = seed)
+    if not(os.path.isfile('brain')):
+        model = nn.MLPClassifier(hidden_layer_sizes = n_layers, activation = activation,
+                                 solver = solver, random_state = seed)
+        pickle.dump(model, open("brain", "wb"))
+    else:
+        model = pickle.load(open("brain","rb"))
 
     #k-fold alt-model
     F_measure = 0.0
     k_size = X.shape[0] / k
     for i in range(100):
-        k_test = rd.randint(0, k) * k_size
+        k_test = rd.randint(0, k-1) * k_size
         for j in range(0, k*k_size, k_size):
             if j == k_test:
                 continue
             sampleBot, sampleTop = j, j + k_size
-            model.fit(X[sampleBot:sampleTop],y[sampleBot:sampleTop])
+            model = model.fit(X[sampleBot:sampleTop],y[sampleBot:sampleTop])
         F_i = Results(y[k_test:k_test+k_size],model.predict(X[k_test:k_test+k_size]),False)
         F_measure = F_measure + F_i
 
+    pickle.dump(model, open("brain", "wb"))
+    #yt = model.predict(Xt)
+    #convert_DataToCsv(yt,'output.csv')
     return F_measure/100, F_i
 
