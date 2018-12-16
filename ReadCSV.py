@@ -9,6 +9,8 @@ import pickle
 from sklearn.utils import shuffle
 from sklearn.preprocessing import OneHotEncoder
 
+encoder_name = "enc"
+
 def convert_CsvToData(name, TrainingData = True):
     """Extract all data from a csv file. Each column is delemited by a comma.
 
@@ -32,21 +34,21 @@ def convert_CsvToData(name, TrainingData = True):
 
     #Neural Networks doesn't support string, so convert them => Encoder
     if TrainingData:
-        if not(os.path.isfile('enc')):
+        if not(os.path.isfile(encoder_name)):
             enc = OneHotEncoder(handle_unknown='ignore')
             enc.fit(rawData.iloc[:,:-1])
-            pickle.dump(enc, open("enc", "wb"))
+            pickle.dump(enc, open(encoder_name, "wb"))
         else:
-            enc = pickle.load(open("enc","rb"))
+            enc = pickle.load(open(encoder_name,"rb"))
         inData = pd.DataFrame(enc.transform(rawData.iloc[:,:-1]).toarray())
         outData = rawData.iloc[:,-1].values
     else:
-        if not(os.path.isfile('enc')):
+        if not(os.path.isfile(encoder_name)):
             enc = OneHotEncoder()
             enc.fit(rawData)
-            pickle.dump(enc, open("enc", "wb"))
+            pickle.dump(enc, open(encoder_name, "wb"))
         else:
-            enc = pickle.load(open("enc","rb"))
+            enc = pickle.load(open(encoder_name,"rb"))
         inData = pd.DataFrame(enc.transform(rawData).toarray())
         outData = pd.DataFrame([0]*rawData.shape[0]).T.values[0]
 
@@ -76,12 +78,12 @@ def convert_CsvToData_ratio(name, ratio = 0.5, size = 10000):
     rawData = rawData.fillna(0)
 
     #Encoder
-    if not(os.path.isfile('enc')):
+    if not(os.path.isfile(encoder_name)):
         enc = OneHotEncoder(handle_unknown='ignore')
         enc.fit(rawData.iloc[:,:-1])
-        pickle.dump(enc, open("enc", "wb"))
+        pickle.dump(enc, open(encoder_name, "wb"))
     else:
-        enc = pickle.load(open("enc","rb"))
+        enc = pickle.load(open(encoder_name,"rb"))
         
     #Rearranging index after sorting and get the index of the first 1.
     n_d = rawData.shape[0]
