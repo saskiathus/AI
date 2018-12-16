@@ -34,7 +34,7 @@ def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbf
     #k-fold alt-model
     F_measure = 0.0
     k_size = X.shape[0] / k
-    for i in range(10):
+    for i in range(20):
         k_test = rd.randint(0, k-1) * k_size
         for j in range(0, k*k_size, k_size):
             if j == k_test:
