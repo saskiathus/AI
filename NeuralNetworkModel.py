@@ -17,7 +17,7 @@ def Results(y_true, y_pred, print_res = True):
         print "Accuracy:",acc,"\nPrecision:",prec,"\nRecall:",rec,"\nF-Measure:",F,"\n"
     return F
 
-def NN_Model(data_size, n_layers, ratio_p, k, activation, solver, seed):
+def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbfgs', seed = None):
     #Data
     X, y = convert_CsvToData_ratio('TraData.csv', ratio = ratio_p, size = data_size)
     #Xt, yt = convert_CsvToData('input.csv',TrainingData = False)
@@ -34,7 +34,7 @@ def NN_Model(data_size, n_layers, ratio_p, k, activation, solver, seed):
     #k-fold alt-model
     F_measure = 0.0
     k_size = X.shape[0] / k
-    for i in range(100):
+    for i in range(10):
         k_test = rd.randint(0, k-1) * k_size
         for j in range(0, k*k_size, k_size):
             if j == k_test:
