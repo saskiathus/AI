@@ -1,12 +1,9 @@
 from ReadCSV import *
-#import pickle
 import sklearn.neural_network as nn
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
-import random as rd
-import numpy as np
 
 def Results(y_true, y_pred, print_res = True):
     F = f1_score(y_true, y_pred)
@@ -17,36 +14,25 @@ def Results(y_true, y_pred, print_res = True):
         print "Accuracy:",acc,"\nPrecision:",prec,"\nRecall:",rec,"\nF-Measure:",F,"\n"
     return F
 
-def NN_Model(data_size, n_layers, ratio_p, k, activation = 'tanh', solver = 'lbfgs', seed = None, name_brain = 'brain'):
+def NN_Model(m_i,sol,act,alpha,tol,ratio,n_lays,F_min = 0):
     #Data
-    X, y = convert_CsvToData_ratio('TraData.csv', ratio = ratio_p, size = data_size)
-    #Xt, yt = convert_CsvToData('input.csv',TrainingData = False)
-    print "Data extraction completed\n"
+    X, y = convert_CsvToData_ratio('TraData.csv', ratio = ratio, size = 5000)
+    X_train, y_train = convert_CsvToData('TraData.csv', limit = 300000) #Ratio = 0.0005
+    print "Data extraction completed"
 
     #Brain
-    name = name_brain
-    if not(os.path.isfile(name)):
-        model = nn.MLPClassifier(hidden_layer_sizes = n_layers, activation = activation,
-                                 solver = solver, random_state = seed)
-        pickle.dump(model, open(name, "wb"))
-    else:
-        model = pickle.load(open(name,"rb"))
+    model = nn.MLPClassifier(hidden_layer_sizes = n_lays,activation = act, tol = tol,
+                             alpha = alpha, solver = sol, max_iter = m_i, random_state = 42)
 
-    #k-fold alt-model
-    F_measure = 0.0
-    k_size = X.shape[0] / k
-    for i in range(20):
-        k_test = rd.randint(0, k-1) * k_size
-        for j in range(0, k*k_size, k_size):
-            if j == k_test:
-                continue
-            sampleBot, sampleTop = j, j + k_size
-            model = model.fit(X[sampleBot:sampleTop],y[sampleBot:sampleTop])
-        F_i = Results(y[k_test:k_test+k_size],model.predict(X[k_test:k_test+k_size]),False)
-        F_measure = F_measure + F_i
+    #Prediction
+    model = model.fit(X,y)
+    Fm = Results(y_train,model.predict(X_train))
 
-    pickle.dump(model, open(name, "wb"))
-    #yt = model.predict(Xt)
-    #convert_DataToCsv(yt,'output.csv')
-    return F_measure/100, F_i
-
+    #Real Output
+    if Fm > F_min:
+        print "Start Real Output!\n"
+        X_test, y_test = convert_CsvToData('input.csv', TrainingData = False)
+        y_test = model.predict(X_test)
+        convert_DataToCsv(y_test,'output.csv')
+        
+    return Fm
