@@ -11,7 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 encoder_name = "enc"
 
-def convert_CsvToData(name, TrainingData = True):
+def convert_CsvToData(name, TrainingData = True, limit = -1):
     """Extract all data from a csv file. Each column is delemited by a comma.
 
     Parameters
@@ -29,7 +29,8 @@ def convert_CsvToData(name, TrainingData = True):
     #Extract data from csv file, and put Nan value to 0
     rawData = pd.read_csv(name, delimiter = ',', dtype={"dclkVerticals": object})
     #del rawData['ip']
-    rawData.drop('ip', axis=1, inplace=True)
+    #rawData.drop(['adx','spaceType','spaceId','spaceCat','adType','ip','os','deviceType','publisherId','dclkVerticals','campaignId','advertiserId'], axis=1, inplace=True)
+    rawData.drop(['adx','ip','deviceType','dclkVerticals'], axis=1, inplace=True)
     rawData = rawData.fillna(0)
 
     #Neural Networks doesn't support string, so convert them => Encoder
@@ -40,8 +41,12 @@ def convert_CsvToData(name, TrainingData = True):
             pickle.dump(enc, open(encoder_name, "wb"))
         else:
             enc = pickle.load(open(encoder_name,"rb"))
-        inData = pd.DataFrame(enc.transform(rawData.iloc[:,:-1]).toarray())
-        outData = rawData.iloc[:,-1].values
+        if limit == -1 or limit > rawData.shape[0]:
+            inData = pd.DataFrame(enc.transform(rawData.iloc[:,:-1]).toarray())
+            outData = rawData.iloc[:,-1].values
+        else:
+            inData = pd.DataFrame(enc.transform(rawData.iloc[:limit,:-1]).toarray())
+            outData = rawData.iloc[:limit,-1].values
     else:
         if not(os.path.isfile(encoder_name)):
             enc = OneHotEncoder()
@@ -49,8 +54,12 @@ def convert_CsvToData(name, TrainingData = True):
             pickle.dump(enc, open(encoder_name, "wb"))
         else:
             enc = pickle.load(open(encoder_name,"rb"))
-        inData = pd.DataFrame(enc.transform(rawData).toarray())
-        outData = pd.DataFrame([0]*rawData.shape[0]).T.values[0]
+        if limit == -1 or limit > rawData.shape[0]:
+            inData = pd.DataFrame(enc.transform(rawData).toarray())
+            outData = pd.DataFrame([0]*rawData.shape[0]).T.values[0]
+        else:
+            inData = pd.DataFrame(enc.transform(rawData.iloc[:limit,:]).toarray())
+            outData = pd.DataFrame([0]*limit).T.values[0]
 
     return inData, outData
 
@@ -74,7 +83,7 @@ def convert_CsvToData_ratio(name, ratio = 0.5, size = 10000):
     #Extract data from csv file, and put Nan value to 0
     rawData = pd.read_csv(name, delimiter = ',', dtype={"dclkVerticals": object})
     #del rawData['ip']
-    rawData.drop('ip', axis=1, inplace=True)
+    rawData.drop(['adx','ip','deviceType','dclkVerticals'], axis=1, inplace=True)
     rawData = rawData.fillna(0)
 
     #Encoder
