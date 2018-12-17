@@ -6,34 +6,40 @@ import random
 from math import log10
 from math import ceil
 
-d, n = 1000, 100 #data_size, n_layers
-#k_samples = [5,7,10,11,14,16,20]
-a, s, se = 'tanh', 'lbfgs', None #activation, solver, seed
+basic_100 = (100,100,100,100)
+basic_200 = (200,200,200)
+n_lays = [basic_200+basic_100]
+ratio = [0.005,0.004]
+tol = [1e-4,5e-5]
+alpha = [2e-5,9e-6]
+activation = ['tanh']
+solver = ['adam']
+max_iter = [700,1500]
 
-name = "Results_10lays.csv"
-na = 'brain_10'
+
+name = "Results_Occam_V5.csv"
 df = pd.DataFrame()
+n_combi = 3*len(n_lays)*len(ratio)*len(tol)*len(alpha)*len(activation)*len(solver)*len(max_iter)
 i = 0
+F_max = 0
 
-ratio_p = 0.5 #ratio_p
-F_measure_Goal = 0.6
-ratio_num = log10(F_measure_Goal)
-ratio_denom = F_measure_Goal + log10(1.0 + 1.0/F_measure_Goal)
-
-while(ratio_p > 0.01):
-    k = random.randint(4,20)
-    d = int(ceil(20.0*k/ratio_p))
-    i = i+1
-    print i,":",d,n,ratio_p,k
-    stTime = time.time()
-    F_values = NN_Model(d,n,ratio_p,k,a,s,se,name_brain = na)
-    fnTime = time.time()-stTime
-    print "F_measure = %.4f\n" % F_values[0]
-    df = df.append([[d,n,ratio_p,k,a,s,se,F_values[0],F_values[1],fnTime]],True)
-    convert_DataToCsv(df,name)
-
-    ratio_p = F_measure_Goal * (ratio_p + log10(1 + F_measure_Goal - F_values[0]) - ratio_num)/ratio_denom
-                            
+for m in max_iter:
+    for s in solver:
+        for a in activation:
+            for af in alpha:
+                for t in tol:
+                    for r in ratio:
+                        for n in n_lays:
+                            for k in range(3):
+                                i = i+1
+                                print i,"/",n_combi,":",m,s,a,af,t,r,n,F_max
+                                Fm = NN_Model(m,s,a,af,t,r,n,F_max)
+                                if Fm > F_max:
+                                    F_max = Fm
+                                print "F_measure = %.4f\n" % Fm
+                                df = df.append([[m,s,a,af,t,r,n,Fm]],True)
+                                convert_DataToCsv(df,name)
+  
 df.columns = ['Data Size', 'Number of layers', 'Ratio of 1 over all',
               'Number of k-samples', 'Type of activation', 'Type of solver',
               'Seed use', 'F-Measure mean', 'Last F-Measure', 'Time']
