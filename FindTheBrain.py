@@ -8,35 +8,36 @@ from math import ceil
 
 basic_100 = (100,100,100,100)
 basic_200 = (200,200,200)
+basic_500 = (500,500)
 n_lays = [basic_200+basic_100]
-ratio = [0.005,0.004]
-tol = [1e-4,5e-5]
-alpha = [2e-5,9e-6]
+ratio = [0.008]
+tol = [1e-5]
+alpha = [2e-5]
 activation = ['tanh']
 solver = ['adam']
-max_iter = [700,1500]
+max_iter = [1000]
 
 
-name = "Results_Occam_V5.csv"
+name = "Results_Occam_V7.csv"
 df = pd.DataFrame()
 n_combi = 3*len(n_lays)*len(ratio)*len(tol)*len(alpha)*len(activation)*len(solver)*len(max_iter)
 i = 0
 F_max = 0
 
-for m in max_iter:
-    for s in solver:
-        for a in activation:
-            for af in alpha:
-                for t in tol:
-                    for r in ratio:
-                        for n in n_lays:
-                            for k in range(3):
+for k in range(3):
+    for m in max_iter:
+        for s in solver:
+            for a in activation:
+                for af in alpha:
+                    for t in tol:
+                        for r in ratio:
+                            for n in n_lays:
                                 i = i+1
                                 print i,"/",n_combi,":",m,s,a,af,t,r,n,F_max
                                 Fm = NN_Model(m,s,a,af,t,r,n,F_max)
+                                print "F_measure = %.4f\n" % Fm
                                 if Fm > F_max:
                                     F_max = Fm
-                                print "F_measure = %.4f\n" % Fm
                                 df = df.append([[m,s,a,af,t,r,n,Fm]],True)
                                 convert_DataToCsv(df,name)
   
