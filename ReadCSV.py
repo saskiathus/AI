@@ -30,7 +30,7 @@ def convert_CsvToData(name, TrainingData = True, limit = -1):
     rawData = pd.read_csv(name, delimiter = ',', dtype={"dclkVerticals": object})
     #del rawData['ip']
     #rawData.drop(['adx','spaceType','spaceId','spaceCat','adType','ip','os','deviceType','publisherId','dclkVerticals','campaignId','advertiserId'], axis=1, inplace=True)
-    rawData.drop(['adx','ip','deviceType','dclkVerticals'], axis=1, inplace=True)
+    rawData.drop('ip', axis=1, inplace=True)
     rawData = rawData.fillna(0)
 
     #Neural Networks doesn't support string, so convert them => Encoder
@@ -83,7 +83,7 @@ def convert_CsvToData_ratio(name, ratio = 0.5, size = 10000):
     #Extract data from csv file, and put Nan value to 0
     rawData = pd.read_csv(name, delimiter = ',', dtype={"dclkVerticals": object})
     #del rawData['ip']
-    rawData.drop(['adx','ip','deviceType','dclkVerticals'], axis=1, inplace=True)
+    rawData.drop('ip', axis=1, inplace=True)
     rawData = rawData.fillna(0)
 
     #Encoder
