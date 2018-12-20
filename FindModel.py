@@ -50,7 +50,7 @@ def F15_process(F_15, X, y):
         if ens_Fm > best_Fm:
             saveName = "_%s_%.4f_%s" % ("ENS",ens_Fm,training_size)
             
-    generate_output(F_15[0][1],"output"+saveName+".csv","model"+saveName+".model")
+    generate_output(F_15[0][1],X_out,"output"+saveName+".csv","model"+saveName+".model")
 
 while Fmax < 0.95:
     # Create new sample of Data
