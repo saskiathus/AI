@@ -39,7 +39,7 @@ def F15_process(F_15, X, y):
     # Comparing first model and Ensemble of 5, and generate the output
     print "Best model: %s" % F_15[0][0]
     best_Fm = Results(y_train_F15,F_15[0][1].predict(X_train_F15))
-    saveName = "_%s_%.4f" % (F_15[0][0],best_Fm)
+    saveName = "_%s_%.4f_%s" % (F_15[0][0],best_Fm,training_size)
     
     ens = VotingClassifier(estimators = F_15)
     ens.fit (X, y)
