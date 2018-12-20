@@ -77,7 +77,7 @@ with open('Stats.txt', 'a') as f:
 
 
 # Output / Prediction
-def generate_output(model,name = "output.csv",name_model = "model"):
-    pickle.dump(clf, open(name_model, "wb"))
+def generate_output(model,X_out,name = "output.csv",name_model = "model"):
+    pickle.dump(model, open(name_model, "wb"))
     y_out = model.predict(X_out)
     convert_DataToCsv(y_out,name)
